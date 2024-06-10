@@ -1,4 +1,4 @@
-# LipSyncr
+# LipReader
 
 LipSyncr is a *lip reading web application designed to accurately decipher spoken words from video footage*. Built upon the powerful LipNet model, this application employs advanced deep learning techniques to analyze and interpret lip movements with remarkable precision.
 
