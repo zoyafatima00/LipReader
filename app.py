@@ -24,36 +24,45 @@ if not os.path.exists(vosk_model_path):
 
 vosk_model = VoskModel(vosk_model_path)
 
-# Custom HTML and CSS for styling and recording video
-st.markdown("""
-    <style>
-    .title {
-        font-size: 50px;
-        font-weight: bold;
-        text-align: center;
-    }
-    .subtitle {
-        font-size: 20px;
-        text-align: center;
-    }
-    .uploader {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .button {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .results {
-        margin-top: 20px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-radius: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Function to load HTML content
+def load_html(file_name):
+    with open(file_name, 'r') as file:
+        return file.read()
+    
+    # Load custom HTML and CSS for styling
+st.markdown(load_html("Frontend/home.html"), unsafe_allow_html=True)
+
+
+# # Custom HTML and CSS for styling and recording video
+# st.markdown("""
+#     <style>
+#     .title {
+#         font-size: 50px;
+#         font-weight: bold;
+#         text-align: center;
+#     }
+#     .subtitle {
+#         font-size: 20px;
+#         text-align: center;
+#     }
+#     .uploader {
+#         display: flex;
+#         justify-content: center;
+#         margin-top: 20px;
+#     }
+#     .button {
+#         display: flex;
+#         justify-content: center;
+#         margin-top: 20px;
+#     }
+#     .results {
+#         margin-top: 20px;
+#         padding: 10px;
+#         background-color: #f9f9f9;
+#         border-radius: 10px;
+#     }
+#     </style>
+# """, unsafe_allow_html=True)
 
 # Navigation bar using tabs
 tab = st.sidebar.radio("Navigation", ["Home", "Train Yourself", "Send Report"])
@@ -208,6 +217,6 @@ elif tab == "Send Report":
 st.markdown("""
 ### How to run this app:
 - Save this script in your project directory.
-- Open a terminal, navigate to the project directory, and run `streamlit run app.py`.
+- Open a terminal, navigate to the project directory, and run streamlit run app.py.
 - Your app will open in a new tab in your web browser.
 """)
