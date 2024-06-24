@@ -1,60 +1,58 @@
-import streamlit as st
-import numpy as np
-from pydub import AudioSegment
-import os
-from moviepy.editor import VideoFileClip
-from difflib import SequenceMatcher
-from vosk import Model as VoskModel, KaldiRecognizer
-import wave
-import json
-from feedback import generate_phoneme_feedback  # Importing from separate file
-from phoneme_analysis import analyze_phonemes  # Importing the phoneme analysis function
+from flask import Flask, render_template
 
-# Importing additional functionalities for tabs
-from train_yourself import display_train_yourself
-from send_report import send_report
+app = Flask(__name__)
 
-# Paths to the Vosk model
-vosk_model_path = "vosk-model-small-en-us-0.15"
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-# Load the Vosk model
-if not os.path.exists(vosk_model_path):
-    st.error("Please download the Vosk model from https://alphacephei.com/vosk/models and unpack as 'vosk-model-small-en-us-0.15' in the current folder.")
-    exit(1)
+@app.route('/worksheet')
+def worksheet():
+    return render_template('worksheet.html')
 
-vosk_model = VoskModel(vosk_model_path)
+@app.route('/report')
+def report():
+    return "This is the report page."
 
-# Custom HTML and CSS for styling and recording video
-st.markdown("""
-    <style>
-    .title {
-        font-size: 50px;
-        font-weight: bold;
-        text-align: right;
-            
-    }
-    .subtitle {
-        font-size: 20px;
-        text-align: center;
-    }
-    .uploader {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .button {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .results {
-        margin-top: 20px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-radius: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Function to load HTML content
+def load_html(file_name):
+    with open(file_name, 'r') as file:
+        return file.read()
+    
+    # Load custom HTML and CSS for styling
+st.markdown(load_html("Frontend/home.html"), unsafe_allow_html=True)
+
+
+# # Custom HTML and CSS for styling and recording video
+# st.markdown("""
+#     <style>
+#     .title {
+#         font-size: 50px;
+#         font-weight: bold;
+#         text-align: center;
+#     }
+#     .subtitle {
+#         font-size: 20px;
+#         text-align: center;
+#     }
+#     .uploader {
+#         display: flex;
+#         justify-content: center;
+#         margin-top: 20px;
+#     }
+#     .button {
+#         display: flex;
+#         justify-content: center;
+#         margin-top: 20px;
+#     }
+#     .results {
+#         margin-top: 20px;
+#         padding: 10px;
+#         background-color: #f9f9f9;
+#         border-radius: 10px;
+#     }
+#     </style>
+# """, unsafe_allow_html=True)
 
 # Navigation bar using tabs
 tab = st.sidebar.radio("Navigation", ["Home", "Train Yourself", "Send Report"])
@@ -209,6 +207,6 @@ elif tab == "Send Report":
 st.markdown("""
 ### How to run this app:
 - Save this script in your project directory.
-- Open a terminal, navigate to the project directory, and run `streamlit run app.py`.
+- Open a terminal, navigate to the project directory, and run streamlit run app.py.
 - Your app will open in a new tab in your web browser.
 """)
