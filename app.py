@@ -30,7 +30,8 @@ st.markdown("""
     .title {
         font-size: 50px;
         font-weight: bold;
-        text-align: center;
+        text-align: right;
+            
     }
     .subtitle {
         font-size: 20px;
