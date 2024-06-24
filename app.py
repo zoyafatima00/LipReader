@@ -28,7 +28,7 @@ vosk_model = VoskModel(vosk_model_path)
 st.markdown("""
     <style>
     .title {
-        font-size: 40px;
+        font-size: 50px;
         font-weight: bold;
         text-align: center;
     }
