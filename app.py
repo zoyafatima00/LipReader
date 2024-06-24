@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
@@ -14,5 +14,6 @@ def worksheet():
 def report():
     return "This is the report page."
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)
+    # jsgdhdhhdhd
