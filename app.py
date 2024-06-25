@@ -67,5 +67,6 @@ def report():
         return redirect(url_for('home'))  # Redirect to home if no results found in session
     return render_template('report.html', results=results)
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)
+    # jsgdhdhhdhd
