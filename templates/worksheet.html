@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="..." crossorigin="anonymous" />
     <style>
         /* Additional CSS for alignment */
-        .logo {
+        /* .logo {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px; /* Adjust padding as needed */
+            padding: 10px 20px; 
         }
-       
-        .back-to-top {
+        */
+        /* .back-to-top {
             display: none;
             position: fixed;
             bottom: 20px;
@@ -32,7 +32,15 @@
         }
         .back-to-top:hover {
             opacity: 0.8;
+        } */
+        #load{
+    width:100%;
+    height:100%;
+    position:fixed;
+    z-index:9999;
+    background:url("/loading.gif") no-repeat center center rgba(0,0,0,0.25)
         }
+
     </style>
 </head>
 <body>
@@ -50,6 +58,7 @@
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/worksheet">Worksheet</a></li>
+                <li><a href="/upload">Upload</a></li>
                 <li><a href="/report">Report</a></li>
             </ul>
         </nav>
@@ -58,6 +67,7 @@
     <main>
         <div class="content">
             <div class="subtitle">Let's practice American English sounds with this fun worksheet!</div>
+            <div id="load"></div>
             <div class="ipa-chart">
                 <a title="American IPA chart with sounds and examples" href="https://americanipachart.com">
                     <object type="image/svg+xml" data="https://americanipachart.s3.amazonaws.com/american-IPA-chart-english.svg" style="width: 770px;">
@@ -89,6 +99,19 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
+        document.onreadystatechange = function () {
+  var state = document.readyState
+  if (state == 'interactive') {
+       document.getElementById('contents').style.visibility="hidden";
+  } else if (state == 'complete') {
+      setTimeout(function(){
+         document.getElementById('interactive');
+         document.getElementById('load').style.visibility="hidden";
+         document.getElementById('contents').style.visibility="visible";
+      },1000);
+  }
+}
+
     </script>
 </body>
 </html>
