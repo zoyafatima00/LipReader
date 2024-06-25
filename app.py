@@ -1,213 +1,134 @@
-import streamlit as st
-import numpy as np
-from pydub import AudioSegment
+from flask import Flask, render_template, request, redirect, url_for, session
 import os
-from moviepy.editor import VideoFileClip
-from difflib import SequenceMatcher
-from vosk import Model as VoskModel, KaldiRecognizer
-import wave
-import json
-from feedback import generate_phoneme_feedback  # Importing from separate file
-from phoneme_analysis import analyze_phonemes  # Importing the phoneme analysis function
+from werkzeug.utils import secure_filename
+from utils import extract_audio_from_video, transcribe_audio_vosk, analyze_transcription, generate_suggestions, get_phoneme_analysis
+import logging
 
-# Importing additional functionalities for tabs
-from train_yourself import display_train_yourself
-from send_report import send_report
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Paths to the Vosk model
-vosk_model_path = "vosk-model-small-en-us-0.15"
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.secret_key = 'supersecretkey'  # Ensure this is set for session management
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-# Load the Vosk model
-if not os.path.exists(vosk_model_path):
-    st.error("Please download the Vosk model from https://alphacephei.com/vosk/models and unpack as 'vosk-model-small-en-us-0.15' in the current folder.")
-    exit(1)
+def basename(path):
+    return os.path.basename(path)
 
-vosk_model = VoskModel(vosk_model_path)
+app.jinja_env.filters['basename'] = basename
 
-# Custom HTML and CSS for styling and recording video
-st.markdown("""
-    <style>
-    .title {
-        font-size: 50px;
-        font-weight: bold;
-        text-align: center;
-    }
-    .subtitle {
-        font-size: 20px;
-        text-align: center;
-    }
-    .uploader {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .button {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .results {
-        margin-top: 20px;
-        padding: 10px;
-        background-color: #f9f9f9;
-        border-radius: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-# Navigation bar using tabs
-tab = st.sidebar.radio("Navigation", ["Home", "Train Yourself", "Send Report"])
+@app.route('/worksheet')
+def worksheet():
+    return render_template('worksheet.html')
 
-if tab == "Home":
-    # Title and description
-    st.markdown('<div class="title">Speech Analysis for Children</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">This app analyzes speech from children trying to pronounce words. It identifies issues with phonemes and provides suggestions for improvement. Upload a video of the child speaking and provide the expected phrase.</div>', unsafe_allow_html=True)
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            return redirect(request.url)
+        if file:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('analyze_file', filename=filename))
+    return render_template('upload.html')
 
-    # Video upload
-    st.markdown('<div class="uploader">', unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("Choose a video file...", type=["mp4", "mov", "avi"])
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    expected_text = st.text_input("Enter the expected word or phrase:", "")
-
-    def extract_audio_from_video(video_file_path):
-        video_clip = VideoFileClip(video_file_path)
-        audio_path = "temp_audio.wav"
-        video_clip.audio.write_audiofile(audio_path, codec='pcm_s16le')
-        video_clip.close()
-        return audio_path
-
-    def transcribe_audio_vosk(audio_file_path):
-        wf = wave.open(audio_file_path, "rb")
-        if wf.getnchannels() != 1 or wf.getsampwidth() != 2 or wf.getframerate() != 16000:
-            raise ValueError("Audio file must be WAV format mono PCM with a sample rate of 16000 Hz.")
+# @app.route('/analyze/<filename>', methods=['GET', 'POST'])
+# def analyze_file(filename):
+#     if request.method == 'POST':
+#         expected_text = request.form['expected_text']
+#         video_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
-        rec = KaldiRecognizer(vosk_model, wf.getframerate())
-        transcription = []
-
-        while True:
-            data = wf.readframes(4000)
-            if len(data) == 0:
-                break
-            if rec.AcceptWaveform(data):
-                result = rec.Result()
-                transcription.append(result)
-            else:
-                rec.PartialResult()
-
-        transcription.append(rec.FinalResult())
-        text = ' '.join([eval(res)["text"] for res in transcription])
-        wf.close()
-        return text
-
-    def analyze_transcription(transcription, expected_text):
-        expected_words = expected_text.split()
-        transcribed_words = transcription.split()
-        analysis = []
-
-        for expected, transcribed in zip(expected_words, transcribed_words):
-            similarity = SequenceMatcher(None, expected, transcribed).ratio()
-            analysis.append({
-                "expected": expected,
-                "transcribed": transcribed,
-                "similarity": similarity
-            })
+#         # Extract audio from video
+#         audio_file_path = extract_audio_from_video(video_file_path)
         
-        overall_similarity = SequenceMatcher(None, expected_text, transcription).ratio()
-        return analysis, overall_similarity
+#         # Transcribe audio
+#         transcription = transcribe_audio_vosk(audio_file_path)
+        
+#         # Analyze transcription
+#         analysis, overall_similarity = analyze_transcription(transcription, expected_text)
+        
+#         # Generate phoneme suggestions
+#         suggestions = generate_suggestions(analysis)
 
-    def generate_suggestions(analysis):
-        suggestions = []
-        for item in analysis:
-            if item['similarity'] < 0.8:
-                phoneme_feedback = generate_phoneme_feedback(item['expected'][0])
-                suggestion = f"Improve the pronunciation of '{item['expected']}'. {phoneme_feedback}"
-                suggestions.append(suggestion)
-        return suggestions
+#         phoneme_analysis = get_phoneme_analysis(transcription)
 
-    if uploaded_file is not None and expected_text and st.button('Analyze'):
-        st.markdown('<div class="results">', unsafe_allow_html=True)
-        
-        # Save the uploaded video file
-        with open("uploaded_video.mp4", "wb") as f:
-            f.write(uploaded_file.getbuffer())
-        
-        st.video(uploaded_file)
-        
-        # Extract audio from the video
-        audio_file_path = extract_audio_from_video("uploaded_video.mp4")
-        
-        # Ensure the audio is in the correct format
-        audio = AudioSegment.from_wav(audio_file_path)
-        audio = audio.set_channels(1).set_frame_rate(16000)
-        audio.export("temp_audio_mono.wav", format="wav")
+#         analysis_results = {
+#             "filename": filename,
+#             "expected_text": expected_text,
+#             "transcription": transcription,
+#             "overall_similarity": overall_similarity,
+#             "analysis": analysis,
+#             "suggestions": suggestions,
+#             "phoneme_analysis": phoneme_analysis  # Include phoneme analysis results
+#         }
 
-        # Transcribe the audio using Vosk
-        transcription = transcribe_audio_vosk("temp_audio_mono.wav")
+#         session['results'] = analysis_results  # Store results in session
+#         print("Session set:", session['results'])  # Debug print
+#         return redirect(url_for('report'))
+#     return render_template('expected_phrase.html', filename=filename)
+@app.route('/analyze/<filename>', methods=['GET', 'POST'])
+def analyze_file(filename):
+    if request.method == 'POST':
+        expected_text = request.form['expected_text']
+        video_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
-        st.write("**Expected Phrase:**")
-        st.write(expected_text)
+        logging.info(f'Analyzing file: {filename}')
+        logging.debug(f'Expected text: {expected_text}')
         
-        st.write("**Transcription:**")
-        st.write(transcription)
-        st.audio("temp_audio_mono.wav")  # Provide control over the audio playback
-        
-        # Detailed Analysis using similarity matching
-        analysis, overall_similarity = analyze_transcription(transcription, expected_text)
-        st.write("### Detailed Analysis")
-        for item in analysis:
-            st.write(f"Expected: {item['expected']}, Transcribed: {item['transcribed']}, Similarity: {item['similarity']:.2f}")
-            if item['similarity'] < 1.0:
-                st.write(f"- Suggestion: Practice saying '{item['expected']}' more clearly.")
-        
-        st.write(f"**Overall Similarity Score:** {overall_similarity:.2f}")
-
-        # Get the phoneme analysis
-        phoneme_analysis = analyze_phonemes(transcription)
-        st.write("### Phoneme-level Analysis")
-        for result in phoneme_analysis:
-            st.write(f"Phoneme: {result['phoneme']} (from word '{result['word']}'), Analysis: {result['feedback']}")
-            if result['audio_file']:
-                st.audio(result['audio_file'])
-
-        # Generate suggestions for improvement
-        if overall_similarity < 0.8:
-            st.write("### Suggestions for Improvement")
+        try:
+            # Extract audio from video
+            audio_file_path = extract_audio_from_video(video_file_path)
+            logging.info(f'Audio extracted: {audio_file_path}')
+            
+            # Transcribe audio
+            transcription = transcribe_audio_vosk(audio_file_path)
+            logging.info(f'Transcription: {transcription}')
+            
+            # Analyze transcription
+            analysis, overall_similarity = analyze_transcription(transcription, expected_text)
+            logging.info(f'Analysis: {analysis}')
+            logging.info(f'Overall similarity: {overall_similarity}')
+            
+            # Generate phoneme suggestions
             suggestions = generate_suggestions(analysis)
-            for suggestion in suggestions:
-                st.write(f"- {suggestion}")
+            logging.info(f'Suggestions: {suggestions}')
+            
+            # Get phoneme analysis
+            phoneme_analysis = get_phoneme_analysis(transcription)
+            logging.info(f'Phoneme analysis: {phoneme_analysis}')
+            
+            analysis_results = {
+                "filename": filename,
+                "expected_text": expected_text,
+                "transcription": transcription,
+                "overall_similarity": overall_similarity,
+                "analysis": analysis,
+                "suggestions": suggestions,
+                "phoneme_analysis": phoneme_analysis
+            }
 
-        # Save analysis results to a file
-        analysis_results = {
-            "expected_text": expected_text,
-            "transcription": transcription,
-            "analysis": analysis,
-            "overall_similarity": overall_similarity,
-            "phoneme_analysis": phoneme_analysis
-        }
-        with open("analysis_results.json", "w") as f:
-            json.dump(analysis_results, f)
+            session['results'] = analysis_results  # Store results in session
+            logging.info(f'Results stored in session: {session["results"]}')
+            return redirect(url_for('report'))
+        except Exception as e:
+            logging.error(f'Error during analysis: {e}')
+            return redirect(url_for('upload'))
+    return render_template('expected_phrase.html', filename=filename)
 
-        # Remove the temporary files
-        os.remove("uploaded_video.mp4")
-        os.remove(audio_file_path)
-        os.remove("temp_audio_mono.wav")
-        for result in phoneme_analysis:
-            if os.path.exists(result['audio_file']):
-                os.remove(result['audio_file'])
-        
-        st.markdown('</div>', unsafe_allow_html=True)
 
-elif tab == "Train Yourself":
-    display_train_yourself()
+@app.route('/report')
+def report():
+    results = session.get('results', None)
+    print("Session retrieved:", results)  # Debug print
+    if results is None:
+        return redirect(url_for('home'))  # Redirect to home if no results found in session
+    return render_template('report.html', results=results)
 
-elif tab == "Send Report":
-    send_report()
-
-# Instructions on how to run the app
-st.markdown("""
-### How to run this app:
-- Save this script in your project directory.
-- Open a terminal, navigate to the project directory, and run `streamlit run app.py`.
-- Your app will open in a new tab in your web browser.
-""")
+if __name__ == '__main__':
+    app.run(debug=True)

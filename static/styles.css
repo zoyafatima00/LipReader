@@ -1,0 +1,227 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #ffd6a5;
+    color: #333333;
+}
+header {
+    background-color: #ff9900;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+header {
+    display: flex;
+    align-items: center; /* Center items vertically */
+}
+
+.logo {
+    
+    margin-right: 10px; /* Add spacing between the logo and text image */
+}
+
+.text-image-container {
+    margin-right: auto; /* Push the text image container to the right */
+}
+
+.text-image-container img {
+    vertical-align: middle; /* Align image vertically */
+    width: 200px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+}
+.logo img{
+    width: 100px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 10px; /* Add spacing between the images */
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: larger;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 700;
+    
+}
+
+.nav-links li {
+    display: inline;
+    margin-right: 20px;
+    position: relative;
+}
+.nav-links li::after {
+    content: "";
+    position: absolute;
+    top: 50%; /* Align line vertically */
+    right: -10px; /* Adjust the distance of the line from the text */
+    width: 2px; /* Adjust line thickness */
+    height: 20px; /* Adjust line height */
+    background-color:  #0077b2; /* Adjust line color */
+    transform: translateY(-50%); /* Center the line vertically */
+}
+
+.nav-links li:last-child::after {
+    display: none; /* Hide line after the last item */
+}
+
+.nav-links li a {
+    text-decoration: none;
+    color: #0077b2;
+}
+
+.nav-links li a:hover {
+    color: #006090;
+}
+
+.content {
+    text-align: center; /* Center the content */
+}
+
+main .content {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+main .content h2 {
+    margin-top: 0;
+}
+
+main .content form label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+main .content form input[type="file"],
+main .content form input[type="text"],
+main .content form button {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+main .content form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+main .content form button:hover {
+    background-color: #45a049;
+}
+
+
+.back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+.back-to-top i {
+    margin-right: 5px;
+}
+
+.back-to-top:hover {
+    opacity: 0.8;
+}
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffd6a5;
+    color: #333;
+    padding: 2rem;
+    border-bottom: 10px solid #f7a62e;
+}
+.hero-text h2 {
+    font-size: 2rem;
+}
+.hero-text p {
+    margin: 1rem 0;
+}
+.try-now-btn {
+    background-color: #0077b2;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.hero-image img {
+    width: 300px;
+}
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 2rem;
+    background-color: #ffd6a5;
+}
+.feature {
+    text-align: center;
+    padding: 1rem;
+    background-color: #a8c4dc;
+    border-radius: 5px;
+    width: 22%;
+}
+.feature .icon {
+    font-size: 2rem;
+    color: #0077b2;
+    margin-bottom: 0.5rem;
+}
+footer {
+    background-color: #ff9900;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+.content {
+    padding: 2rem;
+}
+.title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+.ipa-chart {
+    margin-bottom: 2rem;
+}
+.about-ipa h3 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+}
+.download_button{
+    background-color: #0077b2;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
