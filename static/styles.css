@@ -92,6 +92,43 @@ header {
     text-align: center; /* Center the content */
 }
 
+main .content {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+main .content h2 {
+    margin-top: 0;
+}
+
+main .content form label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+main .content form input[type="file"],
+main .content form input[type="text"],
+main .content form button {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+main .content form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+main .content form button:hover {
+    background-color: #45a049;
+}
+
+
 .back-to-top {
     display: none;
     position: fixed;
@@ -179,4 +216,12 @@ footer {
 .about-ipa h3 {
     font-size: 1.5rem;
     margin-top: 1.5rem;
+}
+.download_button{
+    background-color: #0077b2;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
