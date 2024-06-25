@@ -11,6 +11,7 @@ def generate_phoneme_feedback(phoneme):
         'v': "Place your top front teeth lightly on your lower lip and voice out.",
         'b': "Bring both lips together and release air to make the 'b' sound.",
         'p': "Bring both lips together and release air quickly to make the 'p' sound.",
+        
         'm': "Press your lips together and hum to make the 'm' sound.",
         'n': "Place the tip of your tongue against the ridge behind your upper front teeth and hum to make the 'n' sound.",
         'ʃ': "Place the tip of your tongue close to the ridge behind your upper front teeth, but slightly further back than for 's'. Let the air flow out with a hissing sound.",
