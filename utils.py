@@ -5,7 +5,8 @@ import json
 import os
 from difflib import SequenceMatcher
 from pydub import AudioSegment
-
+from phoneme_analysis import analyze_phonemes  # Import the phoneme analysis function
+import logging
 def extract_audio_from_video(video_file_path):
     video_clip = VideoFileClip(video_file_path)
     audio_path = "temp_audio.wav"
@@ -83,3 +84,16 @@ def generate_suggestions(analysis):
             suggestion = f"Improve the pronunciation of '{item['expected']}'. {phoneme_feedback}"
             suggestions.append(suggestion)
     return suggestions
+
+# def get_phoneme_analysis(text):
+#     return analyze_phonemes(text)
+def get_phoneme_analysis(text):
+    logging.info('Getting phoneme analysis')
+    phoneme_analysis = analyze_phonemes(text)
+    for item in phoneme_analysis:
+        if item["audio_file"] is None:
+            logging.error(f"Audio file for phoneme {item['phoneme']} not generated correctly.")
+        else:
+            logging.info(f"Audio file for phoneme {item['phoneme']} located at: {item['audio_file']}")
+    logging.info(f'Phoneme analysis result: {phoneme_analysis}')
+    return phoneme_analysis
