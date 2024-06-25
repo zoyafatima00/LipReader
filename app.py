@@ -78,49 +78,41 @@ def analyze_file(filename):
         expected_text = request.form['expected_text']
         video_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
-        logging.info(f'Analyzing file: {filename}')
-        logging.debug(f'Expected text: {expected_text}')
+        audio_file_path = extract_audio_from_video(video_file_path)
+        #logging.info(f'Audio extracted: {audio_file_path}')
         
-        try:
-            # Extract audio from video
-            audio_file_path = extract_audio_from_video(video_file_path)
-            logging.info(f'Audio extracted: {audio_file_path}')
-            
-            # Transcribe audio
-            transcription = transcribe_audio_vosk(audio_file_path)
-            logging.info(f'Transcription: {transcription}')
-            
-            # Analyze transcription
-            analysis, overall_similarity = analyze_transcription(transcription, expected_text)
-            logging.info(f'Analysis: {analysis}')
-            logging.info(f'Overall similarity: {overall_similarity}')
-            
-            # Generate phoneme suggestions
-            suggestions = generate_suggestions(analysis)
-            logging.info(f'Suggestions: {suggestions}')
-            
-            # Get phoneme analysis
-            phoneme_analysis = get_phoneme_analysis(transcription)
-            logging.info(f'Phoneme analysis: {phoneme_analysis}')
-            
-            analysis_results = {
-                "filename": filename,
-                "expected_text": expected_text,
-                "transcription": transcription,
-                "overall_similarity": overall_similarity,
-                "analysis": analysis,
-                "suggestions": suggestions,
-                "phoneme_analysis": phoneme_analysis
-            }
+        # Transcribe audio
+        transcription = transcribe_audio_vosk(audio_file_path)
+        # logging.info(f'Transcription: {transcription}')
+        
+        # Analyze transcription
+        analysis, overall_similarity = analyze_transcription(transcription, expected_text)
+        # logging.info(f'Analysis: {analysis}')
+        # logging.info(f'Overall similarity: {overall_similarity}')
+        
+        # Generate phoneme suggestions
+        suggestions = generate_suggestions(analysis)
+        # logging.info(f'Suggestions: {suggestions}')
+        
+        # Get phoneme analysis
+        phoneme_analysis = get_phoneme_analysis(transcription)
+        # logging.info(f'Phoneme analysis: {phoneme_analysis}')
+        
 
-            session['results'] = analysis_results  # Store results in session
-            logging.info(f'Results stored in session: {session["results"]}')
-            return redirect(url_for('report'))
-        except Exception as e:
-            logging.error(f'Error during analysis: {e}')
-            return redirect(url_for('upload'))
+        analysis_results = {
+            "filename": filename,
+            "expected_text": expected_text,
+            "transcription": transcription,
+            "overall_similarity": overall_similarity,
+            "analysis": analysis,
+            "suggestions": suggestions,
+            "phoneme_analysis": phoneme_analysis
+        }
+
+        session['results'] = analysis_results  # Store results in session
+        print("Session set:", session['results'])  # Debug print
+        return render_template('analyze.html', results=analysis_results)
     return render_template('expected_phrase.html', filename=filename)
-
 
 @app.route('/report')
 def report():
