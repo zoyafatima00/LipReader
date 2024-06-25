@@ -401,42 +401,26 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def sanitize_filename(filename):
-    """
-    Sanitize the filename to be file system and URL safe.
-    """
     valid_chars = f"-_.() {string.ascii_letters}{string.digits}"
     return ''.join(c for c in filename if c in valid_chars)
 
 def get_phonemes(text):
-    """
-    Use the espeak-ng CLI tool to get the phonemes for the given text.
-    """
     try:
-        # Call the espeak-ng command and capture the output
         output = subprocess.check_output(["espeak-ng", "--ipa", text])
-        
-        # Decode the output manually to avoid encoding issues
         output = output.decode('utf-8')
-        
-        # Extract the phonemes from the output
         phonemes = re.findall(r'\S+', output)
-        
         return phonemes
     except subprocess.CalledProcessError as e:
         logging.error(f"Error running espeak-ng: {e}")
         return []
 
 def play_phoneme_audio(phoneme):
-    """
-    Use espeak-ng to generate audio for a given phoneme.
-    """
     try:
         sanitized_phoneme = sanitize_filename(phoneme)
         if not sanitized_phoneme:
             logging.error(f"Sanitized phoneme is empty for phoneme: {phoneme}")
             return None
 
-        # Ensure the directory exists
         output_dir = os.path.join("static", "audio")
         os.makedirs(output_dir, exist_ok=True)
 
@@ -447,7 +431,7 @@ def play_phoneme_audio(phoneme):
         
         if os.path.exists(output_audio_file) and os.path.getsize(output_audio_file) > 0:
             logging.info(f"Audio file generated: {output_audio_file}")
-            return output_audio_file
+            return f"audio/{sanitized_phoneme}.wav"
         else:
             logging.error(f"Failed to generate audio file: {output_audio_file}")
             return None
@@ -474,7 +458,6 @@ def analyze_phonemes(text):
     return analysis_results
 
 def generate_phoneme_analysis(phoneme):
-    # Add detailed analysis for each phoneme
     analysis = {
         's': "The 's' sound is a voiceless alveolar sibilant. It's produced by placing the tip of the tongue close to the ridge behind the upper front teeth and letting the air flow out with a hissing sound. Example: 's' in 'see'.",
         't': "The 't' sound is a voiceless alveolar stop. It's produced by placing the tip of the tongue against the ridge behind the upper front teeth and releasing the air quickly. Example: 't' in 'top'.",
@@ -519,5 +502,4 @@ def generate_phoneme_analysis(phoneme):
         'dˈɒɡ': "The 'dˈɒɡ' sound is a voiced alveolar stop followed by a stressed open back rounded vowel. Example: 'dog'.",
     }
     return analysis.get(phoneme, f"No specific analysis for this phoneme. Example word: '{phoneme}'")
-
 

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory
 import os
 from werkzeug.utils import secure_filename
 from utils import extract_audio_from_video, transcribe_audio_vosk, analyze_transcription, generate_suggestions, get_phoneme_analysis
 import logging
+
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -72,6 +73,11 @@ def upload():
 #         print("Session set:", session['results'])  # Debug print
 #         return redirect(url_for('report'))
 #     return render_template('expected_phrase.html', filename=filename)
+
+@app.route('/audio/<filename>')
+def serve_audio(filename):
+    return send_from_directory('static/audio', filename)
+    
 @app.route('/analyze/<filename>', methods=['GET', 'POST'])
 def analyze_file(filename):
     if request.method == 'POST':
