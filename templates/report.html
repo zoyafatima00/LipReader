@@ -259,6 +259,284 @@
 </body>
 </html> -->
 
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #ccc;
+        }
+        .logo img {
+            height: 50px;
+        }
+        .text-image-container img {
+            height: 30px;
+        }
+        
+        .content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #0077b2;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2, h3 {
+            color: #2c3e50;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 15px;
+        }
+        .suggestion {
+            background-color: #eaf2f8;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">
+                <img src="{{ url_for('static', filename='images/2.png') }}" alt="logo">
+            </a>
+        </div>
+        <div class="text-image-container">
+            <img src="{{ url_for('static', filename='images/1.png') }}" alt="title">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/worksheet">Worksheet</a></li>
+                <li><a href="/report">Report</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Report</h2>
+            <div>
+                <h3>Overall Similarity Score:</h3>
+                <p>{{ results['overall_similarity'] }}</p>
+                <h3>Detailed Analysis:</h3>
+                <ul>
+                    {% for item in results['analysis'] %}
+                        <li>
+                            <strong>Expected:</strong> {{ item['expected'] }}<br>
+                            <strong>Transcribed:</strong> {{ item['transcribed'] }}<br>
+                            <strong>Similarity:</strong> {{ item['similarity'] }}
+                            {% if item['similarity'] < 1.0 %}
+                                <p>Suggestion: Practice saying '{{ item['expected'] }}' more clearly.</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <h3>Phoneme-level Analysis:</h3>
+                <ul>
+                    {% for phoneme in results['phoneme_analysis'] %}
+                        <li>
+                            <strong>Phoneme:</strong> {{ phoneme['phoneme'] }} (from word '{{ phoneme['word'] }}')<br>
+                            <strong>Analysis:</strong> {{ phoneme['feedback'] }}
+                            {% if phoneme['audio_file'] %}
+                                <audio controls>
+                                   
+                                    <source src="{{ url_for('static', filename='audio/' + phoneme['audio_file'].split('/')[-1]) }}" type="audio/wav">
+                                   
+                                    Your browser does not support the audio element.
+                                </audio>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <h3>Suggestions for Improvement:</h3>
+                <ul>
+                    {% for suggestion in results['suggestions'] %}
+                        <li class="suggestion">{{ suggestion }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button class="download_button" onclick="downloadPDF()">Download as PDF</button>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+    
+    <script>
+        function downloadPDF() {
+            // Create a new jsPDF instance
+            const doc = new jsPDF();
+
+            // Get the content of the report section and add it to the PDF
+            const content = document.querySelector('.content');
+            doc.html(content, {
+                callback: function (doc) {
+                    // Save the PDF with the name 'report.pdf'
+                    doc.save('report.pdf');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+-->
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #ccc;
+        }
+        .logo img {
+            height: 50px;
+        }
+        .text-image-container img {
+            height: 30px;
+        }
+        
+        .content {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #0077b2;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2, h3 {
+            color: #2c3e50;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 15px;
+        }
+        .suggestion {
+            background-color: #eaf2f8;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/">
+                <img src="{{ url_for('static', filename='images/2.png') }}" alt="logo">
+            </a>
+        </div>
+        <div class="text-image-container">
+            <img src="{{ url_for('static', filename='images/1.png') }}" alt="title">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/worksheet">Worksheet</a></li>
+                <li><a href="/report">Report</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Report</h2>
+            <div>
+                <h3>Overall Similarity Score:</h3>
+                <p>{{ results['overall_similarity'] }}</p>
+                <h3>Detailed Analysis:</h3>
+                <ul>
+                    {% for item in results['analysis'] %}
+                        <li>
+                            <strong>Expected:</strong> {{ item['expected'] }}<br>
+                            <strong>Transcribed:</strong> {{ item['transcribed'] }}<br>
+                            <strong>Similarity:</strong> {{ item['similarity'] }}
+                            {% if item['similarity'] < 1.0 %}
+                                <p>Suggestion: Practice saying '{{ item['expected'] }}' more clearly.</p>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <h3>Phoneme-level Analysis:</h3>
+                <ul>
+                    {% for phoneme in results['phoneme_analysis'] %}
+                        <li>
+                            <strong>Phoneme:</strong> {{ phoneme['phoneme'] }} (from word '{{ phoneme['word'] }}')<br>
+                            <strong>Analysis:</strong> {{ phoneme['feedback'] }}
+                            {% if phoneme['audio_file'] %}
+                                <audio controls>
+                                    <source src="{{ url_for('static', filename='audio/' + phoneme['audio_file'].split('/')[-1]) }}" type="audio/wav">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <h3>Suggestions for Improvement:</h3>
+                <ul>
+                    {% for suggestion in results['suggestions'] %}
+                        <li class="suggestion">{{ suggestion }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button class="download_button" onclick="downloadPDF()">Download as PDF</button>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+   
+    <script>
+        function downloadPDF() {
+            // Create a new jsPDF instance
+            const doc = new jsPDF();
+
+            // Get the content of the report section and add it to the PDF
+            const content = document.querySelector('.content');
+            doc.html(content, {
+                callback: function (doc) {
+                    // Save the PDF with the name 'report.pdf'
+                    doc.save('report.pdf');
+                }
+            });
+        }
+    </script>
+</body>
+</html> -->
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -358,9 +636,13 @@
                             <strong>Analysis:</strong> {{ phoneme['feedback'] }}
                             {% if phoneme['audio_file'] %}
                                 <audio controls>
+<<<<<<< HEAD
                                      <source src="{{ url_for('static', filename='audio/' + phoneme['audio_file'].split('/')[-1]) }}" 
                                     <source src="{{ url_for('static', filename='audio/' + phoneme['audio_file'].split('/')[-1]) }}" type="audio/wav">
                                     type="audio/wav"> 
+=======
+                                    <source src="{{ url_for('serve_audio', filename=phoneme['audio_file'].split('/')[-1]) }}" type="audio/wav">
+>>>>>>> c17ec40e77f18e1af21cbf3131e837fbfc5f28f2
                                     Your browser does not support the audio element.
                                 </audio>
                             {% endif %}
@@ -380,17 +662,12 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
-    <!-- JavaScript code for generating and downloading the PDF -->
     <script>
         function downloadPDF() {
-            // Create a new jsPDF instance
             const doc = new jsPDF();
-
-            // Get the content of the report section and add it to the PDF
             const content = document.querySelector('.content');
             doc.html(content, {
                 callback: function (doc) {
-                    // Save the PDF with the name 'report.pdf'
                     doc.save('report.pdf');
                 }
             });
@@ -398,5 +675,3 @@
     </script>
 </body>
 </html>
-
-
