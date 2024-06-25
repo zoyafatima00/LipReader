@@ -22,6 +22,7 @@
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/worksheet">Worksheet</a></li>
+                <li><a href="/upload">Upload</a></li>
                 <li><a href="/report">Report</a></li>
             </ul>
         </nav>
@@ -34,7 +35,7 @@
             <div class="hero-text">
                 <h2>Speak Smart, Speak with Ease!</h2>
                 <p>Unlock your speaking confidence with SpeakSmart! Upload, analyze and improve your pronunciation skills</p>
-                <button class="try-now-btn">Try Now!</button>  
+                <button class="try-now-btn"  onclick="window.location.href='/upload'">Try Now!</button>  
             </div>
             <div class="hero-image">
                 <img src="{{ url_for('static', filename='images/children.png') }}" alt="Laptop">
